@@ -166,7 +166,7 @@ static events_status stats_handler_countdown(application_structures * const main
                     main_object->active_state = IDLE;
                     return EVENT_TRANSITION;
                 }
-                return EVENT_IGNORED;
+                return EVENT_HANDLED;
 
             }
             return EVENT_IGNORED;
