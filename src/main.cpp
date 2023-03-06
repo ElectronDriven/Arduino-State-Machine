@@ -17,6 +17,9 @@ void loop() {
   //Serial.println("Hello MEHDI"); delay(1000);
   uint8_t pb1, pb2, pb3, pb_value;
   user_events ue;
+  static uint32_t current_time = millis();
+  static tick_events te;
+
   // read the buttons status
   pb1 = digitalRead(PIN_BP1);
   pb2 = digitalRead(PIN_BP2);
@@ -44,6 +47,18 @@ void loop() {
 
   // send it to event dispatcher
   application_event_dispatcher(&progress_timer, &ue.super);
+
+  // dispatch the time tick event for every 100ms
+  if(millis() - current_time >= 100){
+    current_time = millis();
+    te.super.signal = TIME_TICK;
+
+    te.subsecond += 1;
+    if(te.subsecond >10) te.subsecond = 1;
+
+    application_event_dispatcher(&progress_timer, &te.super);
+
+  }  
 
 }
 

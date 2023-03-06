@@ -70,7 +70,7 @@ typedef struct{
 
 typedef struct{
     // time tick events
-    events signal;
+    events super;
     uint8_t subsecond;
 }tick_events;
 
