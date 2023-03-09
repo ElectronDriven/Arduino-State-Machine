@@ -4,7 +4,7 @@
 application_structures progress_timer;
 
 void application_event_dispatcher(application_structures * const main_object, events const * const event);
-static uint8_t pb_value_process(uint8_t * value);
+static uint8_t pb_value_process(uint8_t pb_value);
 
 void setup() {
   // put your setup code here, to run once:
@@ -27,7 +27,7 @@ void loop() {
   pb_value = (pb1<<2)|(pb2<<1)|pb3;
 
   // software button debouncing
-  pb_value = pb_value_process(&pb_value);
+  pb_value = pb_value_process(pb_value);
 
   // make an event!
   if(pb_value){
@@ -85,7 +85,43 @@ void application_event_dispatcher(application_structures * const main_object, ev
   }
 }
 
-static uint8_t pb_value_process(uint8_t * value){
+// de-bouncing
+static uint8_t pb_value_process(uint8_t pb_value){
+  static buttons_states button_state = NOTPRESSED;
+  static uint32_t current_time = millis();
+  
+  switch (button_state)
+  {
+  case NOTPRESSED:{
+     if(button_state){
+      button_state = BOUNCE;
+      current_time = millis();
+     }
+     break;
+  }
+
+  case BOUNCE:{
+    if(millis() - current_time >= 50){
+      if(pb_value){
+        button_state = PRESSED;
+        return pb_value;
+      }
+      else
+        button_state = NOTPRESSED;
+
+    }
+    break;
+  }
+
+  case PRESSED:{
+    if(!pb_value){
+      button_state = BOUNCE;
+      current_time = millis();
+    }
+    break;
+  }  
+
+}
 
   return 0;
 }

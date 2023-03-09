@@ -80,6 +80,13 @@ typedef enum{
     EVENT_TRANSITION
 }events_status;
 
+typedef enum{
+    NOTPRESSED,
+    BOUNCE,
+    PRESSED
+}buttons_states;
+
+
 // prototypes
 void application_init(application_structures *main_object);
 events_status application_state_machine(application_structures * const main_object, events const * const event);
