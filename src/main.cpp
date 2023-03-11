@@ -5,10 +5,20 @@ application_structures progress_timer;
 
 void application_event_dispatcher(application_structures * const main_object, events const * const event);
 static uint8_t pb_value_process(uint8_t pb_value);
+static void display_init();
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  Serial.println("ELECTRON DRIVEN");
+
+  display_init();
+
+  pinMode(PIN_BP1, INPUT);
+  pinMode(PIN_BP2, INPUT);
+  pinMode(PIN_BP3, INPUT);
+
+
   application_init(&progress_timer);
 }
 
@@ -124,4 +134,8 @@ static uint8_t pb_value_process(uint8_t pb_value){
 }
 
   return 0;
+}
+
+static void display_init(){
+  
 }

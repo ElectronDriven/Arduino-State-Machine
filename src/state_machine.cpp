@@ -15,8 +15,13 @@ static events_status stats_handler_stat(application_structures * const main_obje
 
 
 void application_init(application_structures *main_object){
+    events entry_action;
+    entry_action.signal = ENTRY;
+
     main_object->active_state = IDLE;
     main_object->progress_time = 0;
+
+    application_state_machine(main_object, &entry_action);
 }
 
 events_status application_state_machine(application_structures * const main_object, events const * const event){
@@ -134,6 +139,8 @@ static events_status stats_handler_timeset(application_structures * const main_o
 }
 
 static events_status stats_handler_countdown(application_structures * const main_object, events const * const event){
+    static uint8_t tick_count;
+
     switch (event->signal){
         case ENTRY:{
             return EVENT_IGNORED;
@@ -158,7 +165,9 @@ static events_status stats_handler_countdown(application_structures * const main
             return EVENT_IGNORED;
         }
         case TIME_TICK:{
-            if(((tick_events*)(event))->subsecond == 10){
+            //if(((tick_events*)(event))->subsecond == 10){
+            if(++tick_count == 10){
+                tick_count = 0;
                 main_object->current_time -= 1;
                 main_object->elapsed_time += 1;
                 display_time(main_object->current_time);
@@ -218,6 +227,8 @@ static events_status stats_handler_pause(application_structures * const main_obj
 }
 
 static events_status stats_handler_stat(application_structures * const main_object, events const * const event){
+    static uint8_t tick_count;
+
     switch (event->signal){
         case ENTRY:{
             display_time(main_object->progress_time);
@@ -243,7 +254,9 @@ static events_status stats_handler_stat(application_structures * const main_obje
             return EVENT_IGNORED;
         }
         case TIME_TICK:{
-            if(((tick_events*)(event))->subsecond == 10){
+            //if(((tick_events*)(event))->subsecond == 10){
+            if(++tick_count == 10){
+                tick_count = 0;
                 main_object->active_state = IDLE;
                 return EVENT_TRANSITION;
             }
@@ -258,7 +271,16 @@ static events_status stats_handler_stat(application_structures * const main_obje
 
 
 // helper functions
-static void display_time(uint32_t time){}
+static void display_time(uint32_t time){
+    char buffer[7];
+    String time_message;
+    uint16_t minutes = time / 60;
+    uint8_t seconds = time %60;
+    
+    sprintf(buffer, "%03d:%02d", minutes, seconds);
+    time_message = (String)buffer;
+    
+}
 static void display_message(String string){}
 static void display_clear(void){}
 static void do_beep(void){}
